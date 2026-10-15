@@ -4,3 +4,12 @@
 # Modules
 /node_modules
 
+# DB
+/db/*.sqlite
+
+# Vscode
+/.vscode
+
+# Dist
+/dist
+
