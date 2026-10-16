@@ -1,5 +1,5 @@
 import type { Contrato } from "../models/contrato.model.js";
 
-export interface getByIdRepository {
+export interface getContratoByIdRepository {
 	getById(id: number): Contrato | null;
 }
