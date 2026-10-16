@@ -13,3 +13,6 @@
 # Dist
 /dist
 
+# Output
+*.csv
+
