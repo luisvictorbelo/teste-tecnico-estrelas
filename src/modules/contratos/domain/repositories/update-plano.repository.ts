@@ -1,3 +1,5 @@
+import type { ValidRecord } from "../../../../shared/types/valid-record.type.js";
+
 export interface updatePlanoRepository {
-	updatePlano(contractId: number, planoId: number): void;
+	updatePlanos(records: ValidRecord[]): void;
 }

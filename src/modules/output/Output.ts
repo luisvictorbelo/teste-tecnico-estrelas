@@ -31,10 +31,7 @@ export class Output {
 	}
 
 	updateDbWithValidRecords(validRecords: ValidRecord[]): void {
-		for (const record of validRecords) {
-			const { id, para_plano } = record;
-			this.updatePlanoRepository.updatePlano(id, para_plano);
-		}
+		this.updatePlanoRepository.updatePlanos(validRecords);
 		console.log(
 			`Banco de dados atualizado com sucesso para ${validRecords.length} registros válidos.`,
 		);
