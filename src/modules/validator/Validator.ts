@@ -1,8 +1,8 @@
 import type { MigrationRow } from "../../shared/types/migration-row.type.js";
 import type { RejectedRecord } from "../../shared/types/rejected-record.type.js";
 import type { ValidRecord } from "../../shared/types/valid-record.type.js";
-import type { GetContratoByIdAdapter } from "../contratos/domain/infra/adapters/get-by-id.adapter.js";
-import type { GetPlanoByIdAdapter } from "../planos/domain/infra/adapters/get-by-id.adapter.js";
+import type { getContratoByIdRepository } from "../contratos/domain/repositories/get-by-id.repository.js";
+import type { getPlanoByIdRepository } from "../planos/domain/repositories/get-by-id.repository.js";
 
 export interface ValidationResult {
 	validated: ValidRecord[];
@@ -11,8 +11,8 @@ export interface ValidationResult {
 
 export class Validator {
 	constructor(
-		private readonly contractsRepository: GetContratoByIdAdapter,
-		private readonly plansRepository: GetPlanoByIdAdapter,
+		private readonly contractsRepository: getContratoByIdRepository,
+		private readonly plansRepository: getPlanoByIdRepository,
 	) {}
 
 	public validate(data: MigrationRow[]): ValidationResult {

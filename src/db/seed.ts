@@ -1,6 +1,6 @@
-import type Database from "better-sqlite3";
 import fs from "node:fs";
 import path from "node:path";
+import type Database from "better-sqlite3";
 import { env } from "../config/env.js";
 import { createConnection } from "./connection.js";
 
