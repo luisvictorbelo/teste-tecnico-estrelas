@@ -1,6 +1,7 @@
 import type { MigrationRow } from "../../shared/types/migration-row.type.js";
 import type { RejectedRecord } from "../../shared/types/rejected-record.type.js";
 import type { ValidRecord } from "../../shared/types/valid-record.type.js";
+import type { Contrato } from "../contratos/domain/models/contrato.model.js";
 import type { getContratoByIdRepository } from "../contratos/domain/repositories/get-by-id.repository.js";
 import type { getPlanoByIdRepository } from "../planos/domain/repositories/get-by-id.repository.js";
 
@@ -51,9 +52,9 @@ export class Validator {
 				continue;
 			}
 
-			// Se der tempo chamar o repositório aqui para evitar chamar o repositorio toda vez dentro de cada função.
+			const contract = this.contractsRepository.getById(parseInt(item.id, 10));
 
-			if (this.isNotValidContract(item.id)) {
+			if (this.isNotValidContract(contract)) {
 				rejected.push({
 					row,
 					id: item.id,
@@ -66,7 +67,7 @@ export class Validator {
 				continue;
 			}
 
-			if (this.isCancelledContract(item.id)) {
+			if (this.isCancelledContract(contract)) {
 				rejected.push({
 					row,
 					id: item.id,
@@ -79,7 +80,7 @@ export class Validator {
 				continue;
 			}
 
-			if (this.isDePlanoNotSamePlanInDb(item.id, item.de_plano)) {
+			if (this.isDePlanoNotSamePlanInDb(contract, item.de_plano)) {
 				rejected.push({
 					row,
 					id: item.id,
@@ -160,21 +161,18 @@ export class Validator {
 		return false;
 	}
 
-	private isNotValidContract(contractId: string): boolean {
-		const contract = this.contractsRepository.getById(parseInt(contractId, 10));
+	private isNotValidContract(contract: Contrato | null): boolean {
 		return !contract;
 	}
 
-	private isCancelledContract(contractId: string): boolean {
-		const contract = this.contractsRepository.getById(parseInt(contractId, 10));
+	private isCancelledContract(contract: Contrato | null): boolean {
 		return contract?.status === "cancelado";
 	}
 
 	private isDePlanoNotSamePlanInDb(
-		contractId: string,
+		contract: Contrato | null,
 		de_plano: string,
 	): boolean {
-		const contract = this.contractsRepository.getById(parseInt(contractId, 10));
 		return contract?.plano_id !== parseInt(de_plano, 10);
 	}
 
