@@ -1,5 +1,6 @@
-import { stringify } from "csv-stringify/sync";
 import fs from "node:fs";
+import path from "node:path";
+import { stringify } from "csv-stringify/sync";
 import type { RejectedRecord } from "../../shared/types/rejected-record.type.js";
 import type { ValidRecord } from "../../shared/types/valid-record.type.js";
 import type { UpdatePlanoAdapter } from "../contratos/domain/infra/adapters/update-plano.adapter.js";
@@ -24,6 +25,9 @@ export class Output {
 		});
 
 		fs.writeFileSync(outputPath, csv, "utf8");
+		console.log(
+			`Arquivo CSV de registros inválidos gerado em: ${path.join(process.cwd(), outputPath)}`,
+		);
 	}
 
 	updateDbWithValidRecords(validRecords: ValidRecord[]): void {
@@ -31,5 +35,8 @@ export class Output {
 			const { id, para_plano } = record;
 			this.updatePlanoRepository.updatePlano(id, para_plano);
 		}
+		console.log(
+			`Banco de dados atualizado com sucesso para ${validRecords.length} registros válidos.`,
+		);
 	}
 }
