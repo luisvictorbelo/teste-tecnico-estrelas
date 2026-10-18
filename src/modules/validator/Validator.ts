@@ -3,6 +3,7 @@ import type { RejectedRecord } from "../../shared/types/rejected-record.type.js"
 import type { ValidRecord } from "../../shared/types/valid-record.type.js";
 import type { Contrato } from "../contratos/domain/models/contrato.model.js";
 import type { getContratoByIdRepository } from "../contratos/domain/repositories/get-by-id.repository.js";
+import type { Plano } from "../planos/domain/models/plano.model.js";
 import type { getPlanoByIdRepository } from "../planos/domain/repositories/get-by-id.repository.js";
 
 export interface ValidationResult {
@@ -23,8 +24,6 @@ export class Validator {
 
 		for (const [index, item] of data.entries()) {
 			const row = index + 2;
-
-			// Mudar isso aqui para um switch case se der tempo, para ficar mais organizado e legível.
 
 			if (!this.isNumeric(item.id, item.de_plano, item.para_plano)) {
 				rejected.push({
@@ -58,8 +57,7 @@ export class Validator {
 				rejected.push({
 					row,
 					id: item.id,
-					name:
-						this.contractsRepository.getById(parseInt(item.id, 10))?.nome || "",
+					name: contract?.nome || "",
 					de_plano: item.de_plano,
 					para_plano: item.para_plano,
 					motivo: "Contrato não encontrado",
@@ -71,8 +69,7 @@ export class Validator {
 				rejected.push({
 					row,
 					id: item.id,
-					name:
-						this.contractsRepository.getById(parseInt(item.id, 10))?.nome || "",
+					name: contract?.nome || "",
 					de_plano: item.de_plano,
 					para_plano: item.para_plano,
 					motivo: "Contrato cancelado",
@@ -84,8 +81,7 @@ export class Validator {
 				rejected.push({
 					row,
 					id: item.id,
-					name:
-						this.contractsRepository.getById(parseInt(item.id, 10))?.nome || "",
+					name: contract?.nome || "",
 					de_plano: item.de_plano,
 					para_plano: item.para_plano,
 					motivo: "Plano de origem não confere",
@@ -93,12 +89,13 @@ export class Validator {
 				continue;
 			}
 
-			if (this.isParaPlanoNotExist(item.para_plano)) {
+			const plano = this.plansRepository.getById(parseInt(item.para_plano, 10));
+
+			if (this.isParaPlanoNotExist(plano)) {
 				rejected.push({
 					row,
 					id: item.id,
-					name:
-						this.contractsRepository.getById(parseInt(item.id, 10))?.nome || "",
+					name: contract?.nome || "",
 					de_plano: item.de_plano,
 					para_plano: item.para_plano,
 					motivo: "Plano de destino não encontrado",
@@ -106,12 +103,11 @@ export class Validator {
 				continue;
 			}
 
-			if (this.isNotActivePlan(item.para_plano)) {
+			if (this.isNotActivePlan(plano)) {
 				rejected.push({
 					row,
 					id: item.id,
-					name:
-						this.contractsRepository.getById(parseInt(item.id, 10))?.nome || "",
+					name: contract?.nome || "",
 					de_plano: item.de_plano,
 					para_plano: item.para_plano,
 					motivo: "Plano de destino inativo",
@@ -123,8 +119,7 @@ export class Validator {
 				rejected.push({
 					row,
 					id: item.id,
-					name:
-						this.contractsRepository.getById(parseInt(item.id, 10))?.nome || "",
+					name: contract?.nome || "",
 					de_plano: item.de_plano,
 					para_plano: item.para_plano,
 					motivo: "Contrato já está no plano de destino",
@@ -176,14 +171,12 @@ export class Validator {
 		return contract?.plano_id !== parseInt(de_plano, 10);
 	}
 
-	private isParaPlanoNotExist(para_plano: string): boolean {
-		const plan = this.plansRepository.getById(parseInt(para_plano, 10));
-		return !plan;
+	private isParaPlanoNotExist(plano: Plano | null): boolean {
+		return !plano;
 	}
 
-	private isNotActivePlan(para_plano: string): boolean {
-		const plan = this.plansRepository.getById(parseInt(para_plano, 10));
-		return plan?.status !== "ativo";
+	private isNotActivePlan(plano: Plano | null): boolean {
+		return plano?.status !== "ativo";
 	}
 
 	private isDePlanoNotEqualToParaPlano(
